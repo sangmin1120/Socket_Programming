@@ -4,7 +4,9 @@
 
   - AF_UNIX : 유닉스 도메인 소켓 ( 시스템 내부 프로세스간 통신 )
   - AF_INET : 인터넷 소켓 ( 네트워크를 이용한 통신 )
-  ![스크린샷 2024-07-14 133557](https://github.com/user-attachments/assets/529d4aab-681c-4211-a971-0aad17ecb9ee)
+  - 
+![스크린샷 2024-07-14 133557](https://github.com/user-attachments/assets/529d4aab-681c-4211-a971-0aad17ecb9ee)
+
 ![스크린샷 2024-07-14 133650](https://github.com/user-attachments/assets/f21d7e0a-2a73-462c-9da7-e3038c24f739)
 
 - 소켓 통신 방식

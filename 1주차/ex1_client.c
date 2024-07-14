@@ -1,4 +1,4 @@
-  #include <sys/types.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -9,6 +9,7 @@
 #define SOCKET_NAME "kssocket"
 
 int main(void) {
+    // 소켓 생성
     int sd, len;
     char buf[256];
     struct sockaddr_un ser;
@@ -23,16 +24,19 @@ int main(void) {
     strcpy(ser.sun_path, SOCKET_NAME);
     len = sizeof(ser.sun_family) + strlen(ser.sun_path);
 
+    // 연결
     if (connect(sd, (struct sockaddr *)&ser, len) < 0) {
         perror("connect");
         exit(1);
     }
 
+    // 메세지 보내기
     strcpy(buf, "Unix Domain Socket Test Message");
     if (write(sd, buf, sizeof(buf)) == -1) {
     	perror("send");
     	exit(1);
     }
+    // 연결 끊기
     close(sd);
 
     return 0;

@@ -42,12 +42,17 @@
 - listen ( int s , int backlog );
 
   => 여러 클라이언트 요청을 대기시킬 수신 대기열
+  
       s 는 소켓 함수를 수행한 결과를 얻은 듣기 소켓 지정번호
+  
       backlog 는 대기열의 크기
 
 - accept ( int s, struct sockaddr *addr , socklen_t *addrlen );
 
   =>  수신 대기열에 있는 클라이언트의 연결 요청을 확인
+  
       s : 클라이언트 연결 요청을 받아들이는 듣기 소켓
+  
       addr : 클라이언트의 주소와 포트 정보를 구조체에 복사하여 넘겨준다.
+  
       addrlen : sockfd 구조체의 크기

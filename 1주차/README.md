@@ -4,7 +4,7 @@
 
   - AF_UNIX : 유닉스 도메인 소켓 ( 시스템 내부 프로세스간 통신 )
   - AF_INET : 인터넷 소켓 ( 네트워크를 이용한 통신 )
-  - 
+    
 ![스크린샷 2024-07-14 133557](https://github.com/user-attachments/assets/529d4aab-681c-4211-a971-0aad17ecb9ee)
 
 ![스크린샷 2024-07-14 133650](https://github.com/user-attachments/assets/f21d7e0a-2a73-462c-9da7-e3038c24f739)
@@ -38,3 +38,16 @@
 유닉스 도메인 소켓을 사용해 시스템 내부 프로세스간 통신을 진행하였다.
 
 시스템 내부 프로세스간 통신이므로 IP주소없이 소켓을 설정하였다.
+
+- listen ( int s , int backlog );
+
+  => 여러 클라이언트 요청을 대기시킬 수신 대기열
+      s 는 소켓 함수를 수행한 결과를 얻은 듣기 소켓 지정번호
+      backlog 는 대기열의 크기
+
+- accept ( int s, struct sockaddr *addr , socklen_t *addrlen );
+
+  =>  수신 대기열에 있는 클라이언트의 연결 요청을 확인
+      s : 클라이언트 연결 요청을 받아들이는 듣기 소켓
+      addr : 클라이언트의 주소와 포트 정보를 구조체에 복사하여 넘겨준다.
+      addrlen : sockfd 구조체의 크기

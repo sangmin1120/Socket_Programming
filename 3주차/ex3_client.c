@@ -10,7 +10,7 @@
 #define PORTNUM 9000
 
 int main(){
-    // ¼ÒÄÏ init & ¹ÙÀÎµù
+    // ì†Œì¼“ init & ë°”ì¸ë”©
     int sd;
     sd = socket(AF_INET,SOCK_STREAM,0);
 
@@ -20,7 +20,7 @@ int main(){
     sin.sin_addr.s_addr = inet_addr(IP_addr);
     sin.sin_port = htons(PORTNUM);
 
-    // ¿¬°á
+    // ì—°ê²°
     if (connect(sd,(struct sockaddr*)&sin,sizeof(sin))==-1){
         perror("connection error\n");
         exit(1);
@@ -32,17 +32,33 @@ int main(){
         fprintf(stdout,"Input mesasage : ");
         fgets(buf,sizeof(buf),stdin);
 
-        // ¼­¹ö·Î º¸³»±â 
+        // // debug
+        // fprintf(stdout,"write Debug : %s",buf);
+
+        // ì†Œì¼“ì— ì“°ê¸° 
         if (write(sd,buf,sizeof(buf))==-1){
             perror("send erorr\n");
             exit(1);
         }
-        // ¼­¹ö¿¡¼­ ¹Ş±â
+        buf[strlen(buf)-1]='\0';
+        // íŠ¹ìˆ˜ ì²˜ë¦¬
+        if (strcmp(buf,"q")==0 || strcmp(buf,"Q")==0)
+            break;
+
+        if (strcmp(buf,"c")==0 || strcmp(buf,"C")==0)
+            fprintf(stdout,"[Message Cnt Request]\n");
+
+        // ì†Œì¼“ì—ì„œ ì½ì–´ì˜¤ê¸°
         if (read(sd,content,sizeof(content))==-1){
             perror("recv error\n");
             exit(1);
         }
-        // Ãâ·Â
+        // // debug
+        // fprintf(stdout,"read Debug : %s\n",content);
+
+        // ì¶œë ¥
         fprintf(stdout,"[Text From server : %s]\n",content);
     }
+    fprintf(stdout,"[Disconnection Request]\n");
+    close(sd);
 }

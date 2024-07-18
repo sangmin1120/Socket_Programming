@@ -15,6 +15,19 @@
 int g_clnt_socks[CLNT_MAX];
 int g_clnt_count=0;
 
+// 내 sock 빼고 나머지에게 msg를 보냄
+void send_all_clnt(char *msg , int my_sock){
+
+    for (int i=0;i<g_clnt_count;i++){
+
+        int other_sock = g_clnt_socks[i];
+
+        if (other_sock != my_sock){
+            // fprintf(stdout,"debug send_all_cnt (id,msg) : %d , %s ",other_sock,msg);
+            write(other_sock,msg,strlen(msg)+1);
+        }
+    }
+}
 // 고객 전용 함수 쓰레드
 void * clnt_connection(void *arg){
 
@@ -25,11 +38,13 @@ void * clnt_connection(void *arg){
     char msg[BUFSIZE];
     int i;
     while(1){
-        if ((str_len=read(clnt_sock,msg,sizeof(msg)))==-1){
+        str_len=read(clnt_sock,msg,sizeof(msg));
+        if (str_len==-1){
             fprintf(stdout,"read error [%d]\n",clnt_sock);
             break;
         } 
         fprintf(stdout,"%s",msg);
+        send_all_clnt(msg,clnt_sock);
     }
 
     close(clnt_sock);
@@ -71,6 +86,8 @@ int main(int argc , char ** argv){
         clnt_addr_size = sizeof(clnt_addr);
         clnt_sock = accept(serv_sock,(struct sockaddr *)&clnt_addr,&clnt_addr_size);
 
+        // 고객을 저장
+        g_clnt_socks[g_clnt_count++] = clnt_sock;
         // thrad
         pthread_create(&t_thread,NULL,clnt_connection,(void*)clnt_sock);
     }

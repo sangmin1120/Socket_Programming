@@ -14,10 +14,30 @@
 int StoHEX(char fi , char sc);
 void error_handling(char *msg);
 void* send_message(void* arg);
-void* recv_message(void* arg);
 
 char message[BUFSIZE];
 
+// 서버에서 메시지를 받을 스레드
+void* recv_msg(void *arg){
+
+    fprintf(stdout,"rcv thread created\n");
+    int sock = (int)arg;
+
+    char buf[BUFSIZE];
+    int len;
+    while(1){
+        len=read(sock,buf,sizeof(buf)+1);
+        if (len==-1){
+            printf("sock close\n");
+            break;
+        }
+
+        fprintf(stdout,"%s",buf);
+    }
+
+    pthread_exit(0);
+    return NULL;
+}
 int main(int argc , int **argv){
 
     int sock;
@@ -49,6 +69,8 @@ int main(int argc , int **argv){
     else
         fprintf(stdout,"connection success\n");
     
+    if (pthread_create(&rcv_thread,NULL,recv_msg,(void*)sock) != 0)
+        perror("pthread_create error");
     char chat[2000];
     char msg[2000];
 
@@ -56,6 +78,7 @@ int main(int argc , int **argv){
 
     fprintf(stdout,"while before\n");
     while(1){
+    // 보내는 부분
         fprintf(stdout,"채팅 입력 : ");
         fgets(chat,sizeof(chat),stdin);
         // fprintf(stdout,"debug : %s\n",chat);

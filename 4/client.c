@@ -20,7 +20,6 @@ char message[BUFSIZE];
 // 서버에서 메시지를 받을 스레드
 void* recv_msg(void *arg){
 
-    fprintf(stdout,"rcv thread created\n");
     int sock = (int)arg;
 
     char buf[BUFSIZE];
@@ -71,6 +70,9 @@ int main(int argc , int **argv){
     
     if (pthread_create(&rcv_thread,NULL,recv_msg,(void*)sock) != 0)
         perror("pthread_create error");
+    else
+        fprintf(stdout,"rcv thread created\n");
+
     char chat[2000];
     char msg[2000];
 
@@ -81,11 +83,14 @@ int main(int argc , int **argv){
     // 보내는 부분
         fprintf(stdout,"채팅 입력 : ");
         fgets(chat,sizeof(chat),stdin);
-        // fprintf(stdout,"debug : %s\n",chat);
         sprintf(msg,"[%s] : %s\n",id,chat);
-
+        
         fprintf(stdout,"send : %s",msg);
         write(sock,msg,strlen(msg)+1);
+        
+        if (strcmp(chat,"exit\n")==0)
+            break;
+
         sleep(1);
     }
     fprintf(stdout,"while end\n");

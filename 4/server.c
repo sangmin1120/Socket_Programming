@@ -42,14 +42,23 @@ void * clnt_connection(void *arg){
     char msg[BUFSIZE];
     int i;
     while(1){
+        memset(msg,'\0',BUFSIZE);
         str_len=read(clnt_sock,msg,sizeof(msg));
+
+        fprintf(stdout,"read in sock[%d] : %s",clnt_sock,msg);
+
         if (str_len==-1){
             fprintf(stdout,"read error [%d]\n",clnt_sock);
             break;
-        } 
+        }
+
+        if (strstr(msg,"exit")!=NULL || strlen<=0)
+            break;
         fprintf(stdout,"%s",msg);
         send_all_clnt(msg,clnt_sock);
     }
+
+    fprintf(stdout,"disconnected sock[%d]\n",clnt_sock);
 
     // critical section : socket 연결 해제
     pthread_mutex_lock(&g_mutex);
@@ -58,7 +67,7 @@ void * clnt_connection(void *arg){
         for (int i=0;i<g_clnt_count;i++){
             if (clnt_sock==g_clnt_socks[i]){
                 for (;i<g_clnt_count;i++)
-                    g_clnt_socks[i]g=g_clnt_socks[i+1];
+                    g_clnt_socks[i]=g_clnt_socks[i+1];
                 break;
                 g_clnt_count--;                
             }

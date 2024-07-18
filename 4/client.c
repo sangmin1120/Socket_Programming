@@ -20,7 +20,7 @@ char message[BUFSIZE];
 // 서버에서 메시지를 받을 스레드
 void* recv_msg(void *arg){
 
-    int sock = (int)arg;
+    int sock = *(int*)arg;
 
     char buf[BUFSIZE];
     int len;
@@ -51,7 +51,7 @@ int main(int argc , int **argv){
         fprintf(stdout,"you have to enter ID\n");
         return 0;
     }
-    strcpy(id,argv[1]);
+    strcpy(id,(char*)argv[1]);
     printf("id : %s\n",id);
 
     sock=socket(PF_INET , SOCK_STREAM , 0);
@@ -68,12 +68,12 @@ int main(int argc , int **argv){
     else
         fprintf(stdout,"connection success\n");
     
-    if (pthread_create(&rcv_thread,NULL,recv_msg,(void*)sock) != 0)
+    if (pthread_create(&rcv_thread,NULL,recv_msg,(void*)&sock) != 0)
         perror("pthread_create error");
     else
         fprintf(stdout,"rcv thread created\n");
 
-    char chat[2000];
+    char chat[1500];
     char msg[2000];
 
     sprintf(msg,"[%s] : hello world\n",id);

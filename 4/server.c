@@ -36,7 +36,7 @@ void send_all_clnt(char *msg , int my_sock){
 void * clnt_connection(void *arg){
 
     // clnt_sock을 가져올 것이다.
-    int clnt_sock = (int)arg;
+    int clnt_sock = *(char*)arg;
     int str_len=0;
 
     char msg[BUFSIZE];
@@ -121,7 +121,7 @@ int main(int argc , char ** argv){
         pthread_mutex_unlock(&g_mutex);
         
         // thrad
-        pthread_create(&t_thread,NULL,clnt_connection,(void*)clnt_sock);
+        pthread_create(&t_thread,NULL,clnt_connection,(void*)&clnt_sock);
     }
 
     return 0;

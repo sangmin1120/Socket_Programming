@@ -15,9 +15,12 @@
 int g_clnt_socks[CLNT_MAX];
 int g_clnt_count=0;
 
+pthread_mutex_t g_mutex;
+
 // 내 sock 빼고 나머지에게 msg를 보냄
 void send_all_clnt(char *msg , int my_sock){
 
+    pthread_mutex_lock(&g_mutex);
     for (int i=0;i<g_clnt_count;i++){
 
         int other_sock = g_clnt_socks[i];
@@ -27,6 +30,7 @@ void send_all_clnt(char *msg , int my_sock){
             write(other_sock,msg,strlen(msg)+1);
         }
     }
+    pthread_mutex_unlock(&g_mutex);
 }
 // 고객 전용 함수 쓰레드
 void * clnt_connection(void *arg){
@@ -47,7 +51,19 @@ void * clnt_connection(void *arg){
         send_all_clnt(msg,clnt_sock);
     }
 
-    close(clnt_sock);
+    // critical section : socket 연결 해제
+    pthread_mutex_lock(&g_mutex);
+        close(clnt_sock);
+
+        for (int i=0;i<g_clnt_count;i++){
+            if (clnt_sock==g_clnt_socks[i]){
+                for (;i<g_clnt_count;i++)
+                    g_clnt_socks[i]g=g_clnt_socks[i+1];
+                break;
+                g_clnt_count--;                
+            }
+        }
+    pthread_mutex_unlock(&g_mutex);
     pthread_exit(0);
     return NULL;
 }
@@ -56,7 +72,10 @@ int main(int argc , char ** argv){
 
     int serv_sock;
     int clnt_sock;
+
     pthread_t t_thread;
+    
+    pthread_mutex_init(&g_mutex,NULL);
 
     struct sockaddr_in clnt_addr;
     int clnt_addr_size;
@@ -87,7 +106,11 @@ int main(int argc , char ** argv){
         clnt_sock = accept(serv_sock,(struct sockaddr *)&clnt_addr,&clnt_addr_size);
 
         // 고객을 저장
+        // critical section
+        pthread_mutex_lock(&g_mutex);
         g_clnt_socks[g_clnt_count++] = clnt_sock;
+        pthread_mutex_unlock(&g_mutex);
+        
         // thrad
         pthread_create(&t_thread,NULL,clnt_connection,(void*)clnt_sock);
     }
